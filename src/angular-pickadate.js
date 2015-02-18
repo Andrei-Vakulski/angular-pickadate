@@ -235,7 +235,7 @@
                 return v.day === dateObj.getUTCDate();
               });
 
-              if (dayProjects && dayProjects.length && dayProjects[0].status === 1) {
+              if (dayProjects && dayProjects.length && dayProjects[0].status === 1 && !isOutOfRange(dateObj) && !isDisabled) {
                 classNames.push('pickadate-completed');
               }
 
