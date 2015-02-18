@@ -85,11 +85,14 @@
         require: 'ngModel',
         scope: {
           date: '=ngModel',
+          daysInfo: '=',
           defaultDate: '=',
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
-          weekStartsOn: '='
+          weekStartsOn: '=',
+          onMonthChange: '=',
+          onDayChange: '='
         },
         template:
           '<div class="pickadate">' +
@@ -139,6 +142,7 @@
             if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
             selectedDates = allowMultiple ? toggleDate(dateObj.date, selectedDates) : [dateObj.date];
             setViewValue(selectedDates);
+            scope.onDayChange(dateObj.details && dateObj.details[0]);
           };
 
           ngModel.$render = function() {
@@ -161,7 +165,12 @@
 
             setViewValue(selectedDates);
 
-            render();
+            var ngModelDaysInfoWatcher = scope.$watch('daysInfo', function(newValue, oldValue) {
+              if (newValue) {
+                ngModelDaysInfoWatcher();
+                render();
+              }
+            });
           };
 
           scope.classesFor = function(date) {
@@ -176,7 +185,16 @@
             // behaviour
             scope.currentDate.setDate(1);
             scope.currentDate.setMonth(scope.currentDate.getMonth() + offset);
-            render();
+            scope.onMonthChange(scope.currentDate);
+
+            var ChangeMonthDaysInfoWatcher = scope.$watch('daysInfo', function(newValue, oldValue) {
+              if (newValue) {
+                ChangeMonthDaysInfoWatcher();
+                render();
+              }
+            });
+
+            //render();
           };
 
           // Workaround to watch multiple properties. XXX use $scope.$watchGroup in angular 1.3
@@ -213,7 +231,15 @@
               if (isDisabled)     classNames.push('pickadate-unavailable');
               if (date === today) classNames.push('pickadate-today');
 
-              dates.push({date: date, dateObj: dateObj, classNames: classNames});
+              var dayProjects = scope.daysInfo.filter(function(v) {
+                return v.day === dateObj.getUTCDate();
+              });
+
+              if (dayProjects && dayProjects.length && dayProjects[0].status === 1) {
+                classNames.push('pickadate-completed');
+              }
+
+              dates.push({date: date, dateObj: dateObj, classNames: classNames, details: dayProjects});
             }
 
             scope.dates = dates;
