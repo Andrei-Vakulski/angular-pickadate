@@ -167,7 +167,7 @@
 
             var ngModelDaysInfoWatcher = scope.$watch('daysInfo', function(newValue, oldValue) {
               if (newValue) {
-                ngModelDaysInfoWatcher();
+                //ngModelDaysInfoWatcher();
                 render();
               }
             });
