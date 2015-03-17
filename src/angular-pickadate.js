@@ -169,6 +169,11 @@
               if (newValue) {
                 //ngModelDaysInfoWatcher();
                 render();
+                scope.dates.map(function (date) {
+                  if (date.date === scope.date) {
+                    scope.onDayChange(date.details[0]);
+                  }
+                });
               }
             });
           };
